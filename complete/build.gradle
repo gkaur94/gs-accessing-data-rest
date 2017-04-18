@@ -27,7 +27,17 @@ targetCompatibility = 1.8
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-rest")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
-    compile("com.h2database:h2")
+    compile("mysql:mysql-connector-java:6.0.3")
+    compile("com.amazonaws:aws-xray-recorder-sdk-core")
+    compile("com.amazonaws:aws-xray-recorder-sdk-aws-sdk")
+    compile("com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor")
+    compile("com.amazonaws:aws-xray-recorder-sdk-apache-http")
+    compile("com.amazonaws:aws-xray-recorder-sdk-sql-postgres")
+    compile("com.amazonaws:aws-xray-recorder-sdk-sql-mysql")
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
-
+dependencyManagement {
+    imports {
+        mavenBom('com.amazonaws:aws-xray-recorder-sdk-bom:1.0.6-beta')
+    }
+}
