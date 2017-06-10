@@ -1,3 +1,10 @@
+task addVersionClass {
+    println 'generating version class'
+    String hash =  "git rev-parse HEAD".execute().text.trim()
+    String runScr = "C:\\Python27\\pythonw.exe versionClassGenerator.py " + hash
+    runScr.execute()
+}
+
 buildscript {
     repositories {
         mavenCentral()

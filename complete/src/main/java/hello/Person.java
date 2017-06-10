@@ -63,6 +63,6 @@ public class Person {
 	private void addMetadata() {
 		//TODO: change to using interceptor
 		Segment document = AWSXRay.getCurrentSegment();
-		document.putAnnotation("version", "githashjajdghkdjgl");
+		document.putAnnotation("version", VersionNumber.getVersionNumber());
 	}
 }
