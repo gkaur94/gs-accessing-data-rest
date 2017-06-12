@@ -60,6 +60,11 @@ public class Person {
 		}
 	}
 
+	public long getId() {
+		return id;
+	}
+
+
 	private void addMetadata() {
 		//TODO: change to using interceptor
 		Segment document = AWSXRay.getCurrentSegment();
