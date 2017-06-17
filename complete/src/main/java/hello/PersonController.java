@@ -9,6 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.swing.text.html.HTMLDocument;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -19,11 +24,18 @@ public class PersonController {
     private PersonRepository personRepository;
 
     @RequestMapping(value = "/people", method = RequestMethod.GET)
-    public Iterable<Person> getPeople(){
+    public List<Person> getPeople(){
         Subsegment subsegment = AWSXRay.beginSubsegment("getPeople");
         XRayUtils.addMetadata();
         try {
-            return personRepository.findAll();
+            Iterable<Person> people = personRepository.findAll();
+            Iterator<Person> peopleIterator = people.iterator();
+            ArrayList<Person> peopleList = new ArrayList<>();
+            while (peopleIterator.hasNext()) {
+                peopleList.add(peopleIterator.next());
+            }
+            peopleList.sort((person1, person2) -> person1.getLastName().compareToIgnoreCase(person2.getLastName()));
+            return peopleList;
         } finally {
             AWSXRay.endSubsegment();
         }
