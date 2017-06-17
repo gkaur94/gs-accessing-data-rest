@@ -1,9 +1,5 @@
 package hello;
 
-import com.amazonaws.xray.AWSXRay;
-import com.amazonaws.xray.entities.Segment;
-import com.amazonaws.xray.entities.Subsegment;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,44 +16,19 @@ public class Person {
 	private String lastName;
 
 	public String getFirstName() {
-		Subsegment subsegment = AWSXRay.beginSubsegment("getFirstName");
-		XRayUtils.addMetadata();
-		try {
-			return firstName;
-		} finally {
-			AWSXRay.endSubsegment();
-		}
+		return firstName;
 	}
 
 	public void setFirstName(String firstName) {
-		Subsegment subsegment = AWSXRay.beginSubsegment("setFirstName");
-		XRayUtils.addMetadata();
-		try {
-			this.firstName = firstName;
-		} finally {
-			AWSXRay.endSubsegment();
-		}
-
+		this.firstName = firstName;
 	}
 
 	public String getLastName() {
-		Subsegment subsegment = AWSXRay.beginSubsegment("getLastName");
-		XRayUtils.addMetadata();
-		try {
-			return lastName;
-		} finally {
-			AWSXRay.endSubsegment();
-		}
+		return lastName;
 	}
 
 	public void setLastName(String lastName) {
-		Subsegment subsegment = AWSXRay.beginSubsegment("setLastName");
-		XRayUtils.addMetadata();
-		try {
-			this.lastName = lastName;
-		} finally {
-			AWSXRay.endSubsegment();
-		}
+		this.lastName = lastName;
 	}
 
 	public long getId() {
