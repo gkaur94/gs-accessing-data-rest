@@ -14,4 +14,6 @@ public interface PersonRepository extends PagingAndSortingRepository<Person, Lon
 
 	Person findById(Long id);
 
+	List<Person> findAllByOrderByLastNameAsc();
+
 }

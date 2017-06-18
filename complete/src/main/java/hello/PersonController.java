@@ -28,14 +28,7 @@ public class PersonController {
         Subsegment subsegment = AWSXRay.beginSubsegment("getPeople");
         XRayUtils.addMetadata();
         try {
-            Iterable<Person> people = personRepository.findAll();
-            Iterator<Person> peopleIterator = people.iterator();
-            ArrayList<Person> peopleList = new ArrayList<>();
-            while (peopleIterator.hasNext()) {
-                peopleList.add(peopleIterator.next());
-            }
-            peopleList.sort((person1, person2) -> person1.getLastName().compareToIgnoreCase(person2.getLastName()));
-            return peopleList;
+            return personRepository.findAllByOrderByLastNameAsc();
         } finally {
             AWSXRay.endSubsegment();
         }
