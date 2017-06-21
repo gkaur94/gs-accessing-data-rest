@@ -23,6 +23,9 @@ public class PersonController {
     @Autowired
     private PersonRepository personRepository;
 
+    @Autowired
+    private  FriendsRepository friendsRepository;
+
     @RequestMapping(value = "/people", method = RequestMethod.GET)
     public List<Person> getPeople(){
         Subsegment subsegment = AWSXRay.beginSubsegment("getPeople");
@@ -71,6 +74,24 @@ public class PersonController {
 
 
     }
+
+
+    @RequestMapping(value = "/friendship", method = RequestMethod.POST)
+    public ResponseEntity<Void> createFriendship(@RequestBody Friendship friendship, UriComponentsBuilder uriComponentsBuilder) {
+        Subsegment subsegment = AWSXRay.beginSubsegment("createPerson");
+        XRayUtils.addMetadata();
+        try {
+            friendsRepository.save(friendship);
+            HttpHeaders headers = new HttpHeaders();
+            return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+        } finally {
+            AWSXRay.endSubsegment();
+        }
+
+
+    }
+
+
 
 
 
