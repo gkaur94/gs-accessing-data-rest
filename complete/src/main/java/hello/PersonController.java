@@ -27,11 +27,37 @@ public class PersonController {
     private  FriendsRepository friendsRepository;
 
     @RequestMapping(value = "/people", method = RequestMethod.GET)
-    public List<Person> getPeople(){
+    public List<PersonWithFriends> getPeople(){
+        List<PersonWithFriends> peopleWithFriends = new ArrayList<>();
         Subsegment subsegment = AWSXRay.beginSubsegment("getPeople");
         XRayUtils.addMetadata();
         try {
-            return personRepository.findAllByOrderByLastNameAsc();
+            List<Person> people = personRepository.findAllByOrderByLastNameAsc();
+            for (Person person:people) {
+                List<Friendship> friendships = friendsRepository.findByFriendId1(person.getId());
+                ArrayList<Person> friends = new ArrayList<>();
+                for (Friendship friendship: friendships) {
+                    friends.add(personRepository.findById(friendship.getFriendId2()));
+                }
+                friendships = friendsRepository.findByFriendId2(person.getId());
+                for (Friendship friendship: friendships) {
+                    friends.add(personRepository.findById(friendship.getFriendId1()));
+                }
+                ArrayList<Person> friendsOfFriends = new ArrayList<>();
+                for (Person friend : friends){
+                    List<Friendship> friendships2 = friendsRepository.findByFriendId1(friend.getId());
+                    for (Friendship friendship: friendships) {
+                        friendsOfFriends.add(personRepository.findById(friendship.getFriendId2()));
+                    }
+                    friendships2 = friendsRepository.findByFriendId2(friend.getId());
+                    for (Friendship friendship: friendships) {
+                        friendsOfFriends.add(personRepository.findById(friendship.getFriendId1()));
+                    }
+                }
+
+                peopleWithFriends.add(new PersonWithFriends(person,friends,friendsOfFriends));
+            }
+            return peopleWithFriends;
         } finally {
             AWSXRay.endSubsegment();
         }
@@ -49,11 +75,33 @@ public class PersonController {
     }
 
     @RequestMapping(value = "/people/{id}", method = RequestMethod.GET)
-    public Person getPeopleById(@PathVariable("id") Long id){
+    public PersonWithFriends getPeopleById(@PathVariable("id") Long id){
         Subsegment subsegment = AWSXRay.beginSubsegment("getPeopleByID");
         XRayUtils.addMetadata();
         try {
-            return personRepository.findById(id);
+            Person person = personRepository.findById(id);
+            List<Friendship> friendships = friendsRepository.findByFriendId1(person.getId());
+            ArrayList<Person> friends = new ArrayList<>();
+            for (Friendship friendship: friendships) {
+                friends.add(personRepository.findById(friendship.getFriendId2()));
+            }
+            friendships = friendsRepository.findByFriendId2(person.getId());
+            for (Friendship friendship: friendships) {
+                friends.add(personRepository.findById(friendship.getFriendId1()));
+            }
+            ArrayList<Person> friendsOfFriends = new ArrayList<>();
+            for (Person friend : friends){
+                List<Friendship> friendships2 = friendsRepository.findByFriendId1(friend.getId());
+                for (Friendship friendship: friendships) {
+                    friendsOfFriends.add(personRepository.findById(friendship.getFriendId2()));
+                }
+                friendships2 = friendsRepository.findByFriendId2(friend.getId());
+                for (Friendship friendship: friendships) {
+                    friendsOfFriends.add(personRepository.findById(friendship.getFriendId1()));
+                }
+            }
+            return new PersonWithFriends(person,friends,friendsOfFriends);
+
         } finally {
             AWSXRay.endSubsegment();
         }
@@ -78,7 +126,7 @@ public class PersonController {
 
     @RequestMapping(value = "/friendship", method = RequestMethod.POST)
     public ResponseEntity<Void> createFriendship(@RequestBody Friendship friendship, UriComponentsBuilder uriComponentsBuilder) {
-        Subsegment subsegment = AWSXRay.beginSubsegment("createPerson");
+        Subsegment subsegment = AWSXRay.beginSubsegment("createFriendship");
         XRayUtils.addMetadata();
         try {
             friendsRepository.save(friendship);
